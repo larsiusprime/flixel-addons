@@ -1,9 +1,15 @@
 package flixel.addons.plugin.screengrab;
-import flixel.addons.ui.FlxSaveDialog;
-
-#if (sys && systools)
-import systools.Dialogs;
-#end
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
+import lime.utils.UInt8Array;
+import lime.graphics.ImageType;
+import lime.graphics.opengl.GL;
+import lime.graphics.PixelFormat;
+import lime.utils.Int32Array;
+import openfl.display.PNGEncoderOptions;
+import openfl.events.Event;
+import openfl.Lib;
+import openfl.net.FileFilter;
 
 #if !js
 import flash.display.Bitmap;
@@ -15,9 +21,7 @@ import flixel.addons.util.PNGEncoder;
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
 
-#if flash
-import flash.net.FileReference;
-#end
+import openfl.net.FileReference;
 
 /**
  * Captures a screen grab of the game and stores it locally, optionally saving as a PNG.
@@ -86,11 +90,11 @@ class FlxScreenGrab extends FlxBasic
 	 * Takes a screen grab immediately of the given region or a previously defined region
 	 * 
 	 * @param	CaptureRegion	A Rectangle area to capture. This over-rides that set by "defineCaptureRegion". If neither are set the full SWF size is used.
+	 * @param	Callback		A function that will receive the BitmapData when it's done processing
 	 * @param	SaveToFile		Boolean If set to true it will immediately encode the grab to a PNG and open a "Save As" dialog window
 	 * @param	HideMouse		Boolean If set to true the mouse will be hidden before capture and displayed again afterwards
-	 * @return	Bitmap			The screen grab as a Flash Bitmap image
 	 */
-	public static function grab(?CaptureRegion:Rectangle, ?SaveToFile:Bool = false, HideMouse:Bool = false):Bitmap
+	public static function grab(?CaptureRegion:Rectangle, ?Callback:BitmapData->Void, ?SaveToFile:Bool = false, HideMouse:Bool = false):Void
 	{
 		var bounds:Rectangle;
 		
@@ -107,10 +111,6 @@ class FlxScreenGrab extends FlxBasic
 			bounds = new Rectangle(0, 0, FlxG.stage.stageWidth, FlxG.stage.stageHeight);
 		}
 		
-		var theBitmap:Bitmap = new Bitmap(new BitmapData(Math.floor(bounds.width), Math.floor(bounds.height), true, 0x0));
-		
-		var m:Matrix = new Matrix(1, 0, 0, 1, -bounds.x, -bounds.y);
-		
 		#if !FLX_NO_MOUSE
 		if (HideMouse)
 		{
@@ -118,23 +118,29 @@ class FlxScreenGrab extends FlxBasic
 		}
 		#end
 		
-		theBitmap.bitmapData.draw(FlxG.stage, m);
+		Lib.screenShot(FlxG.stage, function(b:BitmapData) {
+			
+			if (screenshot == null) screenshot = new Bitmap();
+			screenshot.bitmapData = b;
+			
+			if (SaveToFile)
+			{
+				save();
+			}
+			
+			#if !FLX_NO_MOUSE
+			if (HideMouse)
+			{
+				FlxG.mouse.visible = true;
+			}
+			#end
+			
+			if (Callback != null)
+			{
+				Callback(b);
+			}
 		
-		#if !FLX_NO_MOUSE
-		if (HideMouse)
-		{
-			FlxG.mouse.visible = true;
-		}
-		#end
-		
-		screenshot = theBitmap;
-		
-		if (SaveToFile)
-		{
-			save();
-		}
-		
-		return theBitmap;
+		},Std.int(bounds.x), Std.int(bounds.y), Std.int(bounds.width), Std.int(bounds.height));
 	}
 	
 	private static function save(Filename:String = ""):Void
@@ -156,19 +162,20 @@ class FlxScreenGrab extends FlxBasic
 		{
 			Filename = Filename + ".png";
 		}
-	
+		
 		var png:ByteArray = null;
+		
 	#if flash
 		png = PNGEncoder.encode(screenshot.bitmapData);
-	#elseif systools
-		#if lime_legacy
-			png = screenshot.bitmapData.encode('png');
-		#else
-			png = screenshot.bitmapData.encode(screenshot.bitmapData.rect, 'png');
-		#end
+	#else
+		png = screenshot.bitmapData.encode(screenshot.bitmapData.rect, new PNGEncoderOptions());
 	#end
+	
+		FlxG.bitmapLog.add(screenshot.bitmapData, "screenshot");
 		
-		FlxSaveDialog.saveFile(Filename, png, "png files", "*.png");
+		var file:FileReference = new FileReference();
+		
+		file.save(png, Filename);
 	}
 	
 	
