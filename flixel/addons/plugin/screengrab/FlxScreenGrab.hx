@@ -118,6 +118,7 @@ class FlxScreenGrab extends FlxBasic
 		}
 		#end
 		
+		/*
 		Lib.screenShot(FlxG.stage, function(b:BitmapData) {
 			
 			if (screenshot == null) screenshot = new Bitmap();
@@ -141,6 +142,7 @@ class FlxScreenGrab extends FlxBasic
 			}
 		
 		},Std.int(bounds.x), Std.int(bounds.y), Std.int(bounds.width), Std.int(bounds.height));
+		*/
 	}
 	
 	private static function save(Filename:String = ""):Void
