@@ -119,7 +119,23 @@ class FlxScreenGrab extends FlxBasic
 		}
 		#end
 		
+		#if sys
+		Lib.screenShot(FlxG.stage, function(bmp:BitmapData) {
+			theBitmap.bitmapData = bmp;
+			screenshot = theBitmap;
+			if (SaveToFile)
+			{
+				save();
+			}
+		});
+		#else
 		theBitmap.bitmapData.draw(FlxG.stage, m);
+		screenshot = theBitmap;
+		if (SaveToFile)
+		{
+			save();
+		}
+		#end
 		
 		#if !FLX_NO_MOUSE
 		if (HideMouse)
@@ -127,13 +143,6 @@ class FlxScreenGrab extends FlxBasic
 			FlxG.mouse.visible = true;
 		}
 		#end
-		
-		screenshot = theBitmap;
-		
-		if (SaveToFile)
-		{
-			save();
-		}
 		
 		return theBitmap;
 	}
