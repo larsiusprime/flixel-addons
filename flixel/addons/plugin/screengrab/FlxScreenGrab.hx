@@ -120,7 +120,7 @@ class FlxScreenGrab extends FlxBasic
 		#end
 		
 		#if sys
-		Lib.screenShot(FlxG.stage, function(bmp:BitmapData) {
+		openfl.Lib.screenShot(FlxG.stage, function(bmp:BitmapData) {
 			theBitmap.bitmapData = bmp;
 			screenshot = theBitmap;
 			if (SaveToFile)
