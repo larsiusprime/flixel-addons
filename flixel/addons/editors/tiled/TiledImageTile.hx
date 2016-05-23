@@ -16,11 +16,22 @@ class TiledImageTile
 	
 	public function new(Source:Fast)
 	{
-		for (img in Source.nodes.image)
+		if (Source.hasNode.image)
 		{
-			width = Std.parseFloat( img.att.width);
-			height = Std.parseFloat(img.att.height);
-			source = img.att.source;
+			for (img in Source.nodes.image)
+			{
+				if (img == null) continue;
+				source = img.has.source ? img.att.source : "";
+				width = img.has.width ? Std.parseFloat( img.att.width) : 0.0;
+				height = img.has.height ? Std.parseFloat(img.att.height) : 0.0;
+			}
+		}
+		else
+		{
+			img = "";
+			width = 0;
+			height = 0;
+			source = "";
 		}
 	}
 }

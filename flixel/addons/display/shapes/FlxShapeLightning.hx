@@ -4,12 +4,16 @@ import flash.display.BitmapData;
 import flash.filters.GlowFilter;
 import flash.geom.Matrix;
 import flixel.FlxG;
+import flixel.addons.display.shapes.FlxShapeLightning.LineSegment;
+import flixel.util.FlxArrayUtil;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRandom;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxSpriteUtil.LineStyle;
 import flixel.math.FlxVector;
+import flixel.util.FlxTimer;
+import openfl.display.Bitmap;
 
 /**
  * This creates a Lightning bolt drawn on top of a FlxSprite object. 
@@ -72,6 +76,7 @@ class FlxShapeLightning extends FlxShapeLine
 		
 		//create the main lightning bolt
 		calculate(A, B, lightningStyle.displacement, 0);
+		sortSegs(A);
 		
 		shape_id = FlxShapeType.LIGHTNING;
 	}
@@ -79,6 +84,38 @@ class FlxShapeLightning extends FlxShapeLine
 	private inline function addSegment(Ax:Float,Ay:Float,Bx:Float,By:Float):Void 
 	{
 		list_segs.push(new LineSegment(Ax, Ay, Bx, By));
+	}
+	
+	private function sortSegs(Head:FlxPoint):Void
+	{
+		var sorted = false;
+		var head:FlxPoint = new FlxPoint(Head.x, Head.y);
+		var final = [];
+		var dist = 0.00001;
+		var failsafe = list_segs.length * 2;
+		while (!sorted && failsafe > 0)
+		{
+			for (i in 0...list_segs.length)
+			{
+				var seg = list_segs[i];
+				if (Math.abs(seg.ax-head.x) < dist && Math.abs(seg.ay-head.y) < dist)
+				{
+					final.push(seg);
+					head.x = seg.bx;
+					head.y = seg.by;
+					if (final.length == list_segs.length)
+					{
+						sorted = true;
+					}
+				}
+			}
+			failsafe--;
+		}
+		if (failsafe > 0)
+		{
+			FlxArrayUtil.clearArray(list_segs);
+			list_segs = final;
+		}
 	}
 	
 	private function calculate(A:FlxPoint, B:FlxPoint, Displacement:Float, Iteration:Int):Void 
@@ -99,6 +136,7 @@ class FlxShapeLightning extends FlxShapeLine
 			calculate(A, mid, Displacement / 2, Iteration);
 			calculate(B, mid, Displacement / 2, Iteration);
 		}
+		
 		shapeDirty = true;
 	}
 	
@@ -222,7 +260,7 @@ class FlxShapeLightning extends FlxShapeLine
 			
 			for (gf in a) 
 			{
-				var pixels2:BitmapData = pixels.clone();
+				var pixels2:BitmapData = pixels;
 				pixels2.applyFilter(pixels, pixels.rect, _flashPointZero, gf);
 				
 				//remember size settings

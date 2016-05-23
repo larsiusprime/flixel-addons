@@ -79,6 +79,8 @@ class FlxShapeArrow extends FlxShape
 	
 	override public function destroy():Void 
 	{
+		FlxDestroyUtil.destroy(point);
+		FlxDestroyUtil.destroy(point2);
 		point = null;
 		point2 = null;
 		FlxDestroyUtil.destroyArray(_vertices);
