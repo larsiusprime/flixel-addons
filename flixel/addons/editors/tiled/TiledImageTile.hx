@@ -28,7 +28,7 @@ class TiledImageTile
 		}
 		else
 		{
-			img = "";
+			id = "";
 			width = 0;
 			height = 0;
 			source = "";
