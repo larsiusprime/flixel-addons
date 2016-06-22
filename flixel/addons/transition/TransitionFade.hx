@@ -4,6 +4,7 @@ import flash.display.BitmapData;
 import flixel.addons.transition.TransitionEffect;
 import flixel.addons.transition.FlxTransitionSprite.TransitionStatus;
 import flixel.FlxSprite;
+import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
@@ -139,8 +140,18 @@ class TransitionFade extends TransitionEffect
 		}
 	}
 	
+	private function makePix():Void
+	{
+		if (FlxG.bitmap.checkCache("white_pix_trans") == false)
+		{
+			var white:BitmapData = new BitmapData(1, 1, false, 0xFFFFFF);
+			FlxG.bitmap.add(white, true, "white_pix_trans");
+		}
+	}
+	
 	private function makeSprite(DirX:Float, DirY:Float):FlxSprite
 	{
+		makePix();
 		var s = new FlxSprite(0, 0);
 		var locX:Float = 0;
 		var locY:Float = 0;
@@ -149,7 +160,10 @@ class TransitionFade extends TransitionEffect
 		if (DirX == 0 && DirY == 0)
 		{
 			//no direction
-			s.makeGraphic(FlxG.width, FlxG.height, _data.color);
+			s.loadGraphic("white_pix_trans");
+			s.scale.set(FlxG.width, FlxG.height);
+			s.updateHitbox();
+			s.color = _data.color;
 		}
 		else if (DirX == 0 && Math.abs(DirY) > 0)
 		{
@@ -158,10 +172,10 @@ class TransitionFade extends TransitionEffect
 			angle = DirY > 0 ? 90 : 270;
 			s.makeGraphic(1, FlxG.height * 2, _data.color);
 			pixels = s.pixels;
-			var gvert = FlxGradient.createGradientBitmapData(1, FlxG.height, [_data.color, FlxColor.TRANSPARENT], 1, angle);
+			var gvert = FlxGradient.createGradientBitmapData(1, Std.int(FlxG.height/10.0), [_data.color, FlxColor.TRANSPARENT], 1, angle);
 			pixels.copyPixels(gvert, gvert.rect, new Point(0, locY));
 			s.pixels = pixels;
-			s.scale.set(FlxG.width, 1.0);
+			s.scale.set(FlxG.width, 10.0);
 			s.updateHitbox();
 		}
 		else if (Math.abs(DirX) > 0 && DirY == 0)

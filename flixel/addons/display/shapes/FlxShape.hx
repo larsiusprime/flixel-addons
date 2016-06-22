@@ -40,7 +40,11 @@ class FlxShape extends FlxSprite
 	public function new(X:Float, Y:Float, CanvasWidth:Float, CanvasHeight:Float, LineStyle_:LineStyle, FillColor:FlxColor, TrueWidth:Float=0, TrueHeight:Float=0) 
 	{
 		super(X, Y);
-		
+		newShape(X, Y, CanvasWidth, CanvasHeight, LineStyle_, FillColor, TrueWidth, TrueHeight);
+	}
+	
+	private function newShape(X:Float, Y:Float, CanvasWidth:Float, CanvasHeight:Float, LineStyle_:LineStyle, FillColor:FlxColor, TrueWidth:Float=0, TrueHeight:Float=0)
+	{
 		lineStyle = LineStyle_;
 		fillColor = FillColor;
 		
