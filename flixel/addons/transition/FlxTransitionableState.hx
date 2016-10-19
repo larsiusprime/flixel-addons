@@ -43,6 +43,8 @@ class FlxTransitionableState extends FlxState
 	public var hasTransIn(get, null):Bool;
 	public var hasTransOut(get, null):Bool;
 	
+	public var transitioning(default, null):Bool = false;
+	
 	/**
 	 * Create a state with the ability to do visual transitions
 	 * @param	TransIn		Plays when the state begins
@@ -111,6 +113,7 @@ class FlxTransitionableState extends FlxState
 	 */
 	public function transitionIn():Void
 	{
+		transitioning = true;
 		if (transIn != null && transIn.type != NONE)
 		{
 			if (skipNextTransIn)
@@ -138,6 +141,7 @@ class FlxTransitionableState extends FlxState
 	 */
 	public function transitionOut(?OnExit:Void->Void):Void
 	{
+		transitioning = true;
 		_onExit = OnExit;
 		if (hasTransOut)
 		{
@@ -183,6 +187,7 @@ class FlxTransitionableState extends FlxState
 	private function finishTransIn()
 	{
 		closeSubState();
+		transitioning = false;
 	}
 	
 	private function finishTransOut()
@@ -198,5 +203,7 @@ class FlxTransitionableState extends FlxState
 		{
 			_onExit();
 		}
+		
+		transitioning = false;
 	}
 }
