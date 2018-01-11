@@ -1,6 +1,7 @@
 package flixel.addons.transition;
 
 import flixel.FlxState;
+import flixel.tweens.FlxTween;
 
 /**
  * FlxTransitionableState
@@ -84,16 +85,54 @@ class FlxTransitionableState extends FlxState
 	override public function switchTo(nextState:FlxState):Bool 
 	{
 		if (!hasTransOut)
+		{
 			return true;
+		}
 		
 		if (!_exiting)
+		{
 			transitionToState(nextState);
+			return transOutFinished;
+		}
 
+		if (!transOutFinished)
+		{
+			checkTransOutFinished(); //fix an edge case bug
+		}
 		return transOutFinished;
+	}
+	
+	private function checkTransOutFinished()
+	{
+		if (subState != null)
+		{
+			if (Std.is(subState, Transition))
+			{
+				var _trans:Transition = cast subState;
+				if (_trans.checkFinished())
+				{
+					transOutFinished = true;
+				}
+				else
+				{
+					return;
+				}
+			}
+		}
+		else
+		{
+			transOutFinished = true;
+		}
+		return;
 	}
 	
 	private function transitionToState(nextState:FlxState):Void
 	{
+		if (_exiting)
+		{
+			return;
+		}
+		
 		//play the exit transition, and when it's done call FlxG.switchState
 		_exiting = true;
 		transitionOut(function()
@@ -113,6 +152,8 @@ class FlxTransitionableState extends FlxState
 	 */
 	public function transitionIn():Void
 	{
+		if (transitioning) return;
+		
 		transitioning = true;
 		if (transIn != null && transIn.type != NONE)
 		{
@@ -141,6 +182,8 @@ class FlxTransitionableState extends FlxState
 	 */
 	public function transitionOut(?OnExit:Void->Void):Void
 	{
+		if (transitioning) return;
+		
 		transitioning = true;
 		_onExit = OnExit;
 		if (hasTransOut)

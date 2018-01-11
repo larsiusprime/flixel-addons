@@ -44,6 +44,15 @@ class TransitionFade extends TransitionEffect
 		back = null;
 	}
 	
+	override public function pause(b:Bool):Void 
+	{
+		super.pause(b);
+		if (tween != null) 
+		{
+			tween.active = !b;
+		}
+	}
+	
 	public override function start(NewStatus:TransitionStatus):Void
 	{
 		super.start(NewStatus);
@@ -70,7 +79,7 @@ class TransitionFade extends TransitionEffect
 			Reflect.setField(Values, tweenStr2, tweenValEnd2);
 		}
 		_data.tweenOptions.onComplete = finishTween;
-		FlxTween.tween(back, Values, _data.duration, _data.tweenOptions);
+		tween = FlxTween.tween(back, Values, _data.duration, _data.tweenOptions);
 	}
 	
 	private function setTweenValues(NewStatus:TransitionStatus, DirX:Float, DirY:Float):Void

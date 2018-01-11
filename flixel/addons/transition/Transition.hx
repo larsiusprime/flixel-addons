@@ -57,6 +57,15 @@ class Transition extends FlxSubState
 		_effect.setStatus(NewStatus);
 	}
 	
+	@:allow(flixel.addons.transition.FlxTransitionableState)
+	private function checkFinished():Bool
+	{
+		if (_effect == null) 
+			return true;
+		
+		return _effect.checkFinished();
+	}
+	
 	private function createEffect(Data:TransitionData):TransitionEffect
 	{
 		switch (Data.type)
