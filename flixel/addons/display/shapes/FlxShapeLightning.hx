@@ -90,7 +90,7 @@ class FlxShapeLightning extends FlxShapeLine
 	{
 		var sorted = false;
 		var head:FlxPoint = new FlxPoint(Head.x, Head.y);
-		var final = [];
+		var result = [];
 		var dist = 0.00001;
 		var failsafe = list_segs.length * 2;
 		while (!sorted && failsafe > 0)
@@ -100,10 +100,10 @@ class FlxShapeLightning extends FlxShapeLine
 				var seg = list_segs[i];
 				if (Math.abs(seg.ax-head.x) < dist && Math.abs(seg.ay-head.y) < dist)
 				{
-					final.push(seg);
+					result.push(seg);
 					head.x = seg.bx;
 					head.y = seg.by;
-					if (final.length == list_segs.length)
+					if (result.length == list_segs.length)
 					{
 						sorted = true;
 					}
@@ -114,7 +114,7 @@ class FlxShapeLightning extends FlxShapeLine
 		if (failsafe > 0)
 		{
 			FlxArrayUtil.clearArray(list_segs);
-			list_segs = final;
+			list_segs = result;
 		}
 	}
 	
