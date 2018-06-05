@@ -70,7 +70,19 @@ class FlxShape extends FlxSprite
 		
 		//we'll eventually want a public drawStyle parameter, but we'll also need an internval _drawStyle to do 
 		//some specific tricks for various shapes (special matrices, punching holes in Donut shapes by using ERASE blend mode, etc)
-		_drawStyle = {matrix:null,colorTransform:null,blendMode:BlendMode.NORMAL,clipRect:null,smoothing:true};
+		
+		if (_drawStyle == null)
+		{
+			_drawStyle = {matrix:null,colorTransform:null,blendMode:BlendMode.NORMAL,clipRect:null,smoothing:true};
+		}
+		else
+		{
+			_drawStyle.matrix = null;
+			_drawStyle.colorTransform = null;
+			_drawStyle.blendMode = BlendMode.NORMAL;
+			_drawStyle.clipRect = null;
+			_drawStyle.smoothing = true;
+		}
 		
 		if (shapeWidth != 0 && shapeHeight != 0) 
 		{
