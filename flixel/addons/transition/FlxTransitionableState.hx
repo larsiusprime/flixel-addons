@@ -137,7 +137,7 @@ class FlxTransitionableState extends FlxState
 		_exiting = true;
 		transitionOut(function()
 		{
-			FlxG.switchState(nextState);
+			doSwitchState(nextState);
 		});
 		
 		if (skipNextTransOut)
@@ -145,6 +145,11 @@ class FlxTransitionableState extends FlxState
 			skipNextTransOut = false;
 			finishTransOut();
 		}
+	}
+	
+	private function doSwitchState(nextState:FlxState):Void
+	{
+		FlxG.switchState(nextState);
 	}
 	
 	/**
