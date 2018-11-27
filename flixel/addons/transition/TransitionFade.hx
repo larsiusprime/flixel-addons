@@ -30,6 +30,9 @@ class TransitionFade extends TransitionEffect
 	private var tweenValEnd:Float = 0;
 	private var tweenValEnd2:Float = 0;
 	
+	private var lastFlxGWidth:Float;
+	private var lastFlxGHeight:Float;
+	
 	public function new(data:TransitionData) 
 	{
 		super(data);
@@ -160,6 +163,10 @@ class TransitionFade extends TransitionEffect
 	
 	private function makeSprite(DirX:Float, DirY:Float):FlxSprite
 	{
+		var needChange = (FlxG.width != lastFlxGWidth || FlxG.height != lastFlxGHeight);
+		lastFlxGWidth = FlxG.width;
+		lastFlxGHeight = FlxG.height;
+		
 		makePix();
 		var s = new FlxSprite(0, 0);
 		var locX:Float = 0;
@@ -179,7 +186,7 @@ class TransitionFade extends TransitionEffect
 			//vertical wipe
 			locY = DirY > 0 ? FlxG.height : 0;
 			angle = DirY > 0 ? 90 : 270;
-			s.makeGraphic(1, FlxG.height * 2, _data.color);
+			s.makeGraphic(1, FlxG.height * 2, _data.color, needChange, FlxG.height+"_"+_data.color);
 			pixels = s.pixels;
 			var gvert = FlxGradient.createGradientBitmapData(1, Std.int(FlxG.height/10.0), [_data.color, FlxColor.TRANSPARENT], 1, angle);
 			pixels.copyPixels(gvert, gvert.rect, new Point(0, locY));
@@ -192,7 +199,7 @@ class TransitionFade extends TransitionEffect
 			//horizontal wipe
 			locX = DirX > 0 ? FlxG.width : 0;
 			angle = DirX > 0 ? 0 : 180;
-			s.makeGraphic(FlxG.width * 2, 1, _data.color);
+			s.makeGraphic(FlxG.width * 2, 1, _data.color, needChange, FlxG.height+"_"+_data.color);
 			pixels = s.pixels;
 			var ghorz = FlxGradient.createGradientBitmapData(FlxG.width, 1, [_data.color, FlxColor.TRANSPARENT], 1, angle);
 			pixels.copyPixels(ghorz, ghorz.rect, new Point(locX, 0));
